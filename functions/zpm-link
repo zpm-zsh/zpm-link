@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+local plugin
+local dir
+
+if [[ ! -z "$1" ]]; then
+  plugin="$1"
+  dir="${1:A}"
+  else
+  plugin="${PWD:t}"
+  dir="${PWD:A}"
+fi
+
+# echo zpm-info $dir $plugin
+ln -sf "${dir}" "${_ZPM_PLUGIN_DIR}/${plugin}"
+zpm clean
