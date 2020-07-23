@@ -6,11 +6,11 @@ local dir
 if [[ ! -z "$1" ]]; then
   plugin="$1"
   dir="${1:A}"
-  else
+else
   plugin="${PWD:t}"
   dir="${PWD:A}"
 fi
 
-# echo zpm-info $dir $plugin
-ln -sf "${dir}" "${_ZPM_PLUGIN_DIR}/${plugin}"
+ln -sf "${dir}" "${_ZPM_PLUGIN_DIR}/@link---${plugin}"
+echo "Now you can enable plugin using \`zpm load @link/${plugin}\`"
 zpm clean
