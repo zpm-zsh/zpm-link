@@ -1,16 +1,42 @@
 #!/usr/bin/env zsh
 
-local plugin
-local dir
+local Plugin_basename
+local Plugin_dir
+local Plugin_type
 
 if [[ ! -z "$1" ]]; then
-  plugin="$1"
-  dir="${1:A}"
+  if [[ -d "$1" ]]; then
+    Plugin_type='dir'
+    Plugin_basename="${1:A:t}"
+    Plugin_dir="${1:A}"
+  else
+    local Plugin_basename_clean="${1:a:t}"
+    Plugin_basename_clean=${Plugin_basename_clean##oh-my-zsh-}
+    Plugin_basename_clean=${Plugin_basename_clean##zsh-}
+    Plugin_basename_clean=${Plugin_basename_clean%%.zsh}
+    Plugin_basename_clean=${Plugin_basename_clean%%-zsh}
+    Plugin_basename_clean=${Plugin_basename_clean%%.plugin}
+
+    Plugin_type='file'
+    Plugin_basename="${Plugin_basename_clean}"
+    Plugin_dir="${1:A}"
+  fi
 else
-  plugin="${PWD:t}"
-  dir="${PWD:A}"
+  Plugin_type='dir'
+  Plugin_basename="${PWD:A:t}"
+  Plugin_dir="${PWD:A}"
 fi
 
-ln -sf "${dir}" "${_ZPM_PLUGIN_DIR}/@link---${plugin}"
-echo "Now you can enable plugin using \`zpm load @link/${plugin}\`"
-zpm clean
+local Plugin_dir_str="${Plugin_dir/"$HOME"/\$HOME}"
+
+if [[ "$Plugin_type" == "dir" ]]; then
+  zpm load "@dir/${Plugin_basename},origin:${Plugin_dir_str}"
+  echo "Plugin loaded in current session. Also you can add this to your ~/.zshrc: \`zpm load \"@dir/${Plugin_basename},origin:${Plugin_dir_str}\"\`"
+else
+  zpm load "@file/${Plugin_basename},origin:${Plugin_dir_str}"
+  echo "Plugin loaded in current session. Also you can add this to your ~/.zshrc: \`zpm load \"@file/${Plugin_basename},origin:${Plugin_dir_str}\"\`"
+fi
+
+
+
+
